@@ -1,0 +1,27 @@
+1. 基於 LangChain 框架來呼叫 OpenAI API
+2. LangChain 整合了 LangSmith 功能，以追蹤和分析 LLM 調用的工具
+    a. 每次的 Prompt 及 Response
+    b. Token 使用情況
+    c. Latency and Errors
+    d. 因為 openai api 並不會提供上述的功能
+3. About the meaning of "Invoke" method
+    a. "Invoke" is like a list of Message object, encapsulating the different types of needs, like SystemMessage and HumanMessage
+    b. With Invoke, we can send multiple messages to the language model in a structured format
+    c. Receive a single, consolidated response from the model with prompt
+4. Prompt template with 2 parameters
+    a. language
+    b. text
+5. Key methods for chat model
+    a. invoke：
+        (1) Primary method to interact with model.
+        (2) Takes a list of messages as input and returns a list of messages as output.
+    b.stream：
+        (1) Allows to stream the output of generations.
+    c.batch 批次：
+        (1) Handles multiple input requests simultaneously.
+        (2) Allows for more efficient processing
+    d.with_structured_output：
+        (1) Binding the defined schema to the model and parsing the output.
+6. Documents Loading
+    a. Documents must to be in local 
+    b. PDF File with "from langchain_community.document_loaders import PyPDFLoader"
