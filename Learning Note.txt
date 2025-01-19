@@ -1,16 +1,34 @@
 1. 基於 LangChain 框架來呼叫 OpenAI API
+
 2. LangChain 整合了 LangSmith 功能，以追蹤和分析 LLM 調用的工具
     a. 每次的 Prompt 及 Response
     b. Token 使用情況
     c. Latency and Errors
     d. 因為 openai api 並不會提供上述的功能
+
 3. About the meaning of "Invoke" method
     a. "Invoke" is like a list of Message object, encapsulating the different types of needs, like SystemMessage and HumanMessage
     b. With Invoke, we can send multiple messages to the language model in a structured format
     c. Receive a single, consolidated response from the model with prompt
-4. Prompt template with 2 parameters
-    a. language
-    b. text
+
+4. Prompt template has different methods
+    a. ChatPromptTemplate.from_messages()
+        (1) application：適用於同時要定義多個角色訊息，如「system」、「user」、「assistant」、「function」等）的情境
+        (2) limitation：需要以 list/tuple 的形式明確指定每個訊息 (message) 與對應的角色 (role)
+        (3) example：
+        ChatPromptTemplate.from_messages([
+            ("system", "Translate the following from English into {language}"),
+            ("user", "{text}")
+        ])
+        (4) assumption：需要在一個 ChatPrompt 裡安插多條訊息（包含 system、user、assistant 等），或需要多段範例、few-shot、上下文，就選擇 from_messages()
+        
+    b. ChatPromptTemplate.from_template()
+        (1) application：更單純的「單一模板」。通常用在只需要一個角色（常見是 user 或 system）即可完成的提示。
+        (2) limitatioin：一次只能生成「一個訊息」(例如整段都視為 user 消息或 system 消息)
+        (3) example：
+        ChatPromptTemplate.from_template("Question: {question}\n{answer}")
+        (4) assumption：只需要一條訊息的模板（例如簡單的翻譯指令、單一問題提示），那麼 from_template() 就能快速完成。
+
 5. Key methods for chat model
     a. invoke：
         (1) Primary method to interact with model.
@@ -22,6 +40,7 @@
         (2) Allows for more efficient processing
     d.with_structured_output：
         (1) Binding the defined schema to the model and parsing the output.
+
 6. Documents Loading
     a. Documents must to be in local 
     b. PDF File with "from langchain_community.document_loaders import PyPDFLoader"
