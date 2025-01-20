@@ -48,7 +48,10 @@
 
 6. **PipelinePromptTemplate** Package's method  
     a. 將 Prompt 模組化 → 可在不同的上下文重複使用，提高靈活性
-    b. 
+    b. 將 Prompt 拆分成多個子Prompt
+        (1) 系統指令
+        (2) 範例提示
+        (3) 用戶輸入
 
 
 7. FewSho"tPromptTemplate v.s. FewShotChatMessagePromptTemplate

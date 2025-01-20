@@ -97,7 +97,9 @@ final_prompt_2 = prompt_template_3.format(adjective="funny")
 
 print(final_prompt_2)
 
-# Chat Prompt Composition
+
+# How to Compose prompt together
+## String Prompt Composition
 prompt_1 = SystemMessage(content="You are a nice pirate")
 prompt_2 = (
     prompt_1 + HumanMessage(content="hi") + AIMessage(content="what?") + "{input}"
@@ -105,9 +107,10 @@ prompt_2 = (
 prompt_3 =prompt_2.format_messages(input="i said hi")
 print(prompt_3)
 
-# Pipeline Prompt
+## Pipeline Prompt Composition
 from langchain_core.prompts import PipelinePromptTemplate
 
+### Define a completed Prompt Template in generation
 full_prompt_template = PromptTemplate.from_template(
     """ 
     {introduction}
@@ -118,10 +121,10 @@ full_prompt_template = PromptTemplate.from_template(
     """
 )
 
+### sub-prompt templates
 introduction_prompt_template = PromptTemplate.from_template(
     """You are impersonating {person}."""
 )
-
 example_prompt_template = PromptTemplate.from_template(
     """
     Here's an example of an interaction:
@@ -130,7 +133,6 @@ example_prompt_template = PromptTemplate.from_template(
     A: {example_a}
     """
 )
-
 start_prompt_template = PromptTemplate.from_template(
     """
     Now, do this for real!
@@ -140,18 +142,20 @@ start_prompt_template = PromptTemplate.from_template(
     """
 )
 
+### Define the sub-prompt template and 
 input_prompts_template = [
     ("introduction", introduction_prompt_template),
     ("example", example_prompt_template),
     ("start", start_prompt_template),
 ]
 
+### Combine different sub-prompt templates to a completed prompt template
+#### based on our "full_prompt_template" and "input_prompts_template" can make it more flexible
 pipeline_prompt = PipelinePromptTemplate(
     final_prompt = full_prompt_template, 
     pipeline_prompts = input_prompts_template
 )
-
-pipeline_prompt.input_variables
+pipeline_prompt.input_variables #### to double check the variable in pipeline_prompt
 
 print(
     pipeline_prompt.format(
