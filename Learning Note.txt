@@ -11,7 +11,7 @@
     b. With Invoke, we can send multiple messages to the language model in a structured format
     c. Receive a single, consolidated response from the model with prompt
 
-4. **ChatPromptTemplate** has different methods
+4. **ChatPromptTemplate** Package's methods
     a. ChatPromptTemplate.from_messages()
         (1) application：適用於同時要定義多個角色訊息，如「system」、「user」、「assistant」、「function」等）的情境
         (2) limitation：需要以 list/tuple 的形式明確指定每個訊息 (message) 與對應的角色 (role)
@@ -29,7 +29,29 @@
         ChatPromptTemplate.from_template("Question: {question}\n{answer}")
         (4) assumption：只需要一條訊息的模板（例如簡單的翻譯指令、單一問題提示），那麼 from_template() 就能快速完成。
 
-5. FewShotPromptTemplate v.s. FewShotChatMessagePromptTemplate
+5. **PromptTemplate** Package's methods
+    a. 用來定義 prompt 的格式
+    b. PromptTemplate("--content--")
+        (1) 需要手動指定 input_variables
+        (2) 適合需要明確變數的場合，如：大型專案、複雜的場景
+        (3) 範例：
+        prompt_template_3 = PromptTemplate(
+            template="Tell me a {adjective} joke about the day {date}",
+            input_variables=["adjective", "date"],
+        )
+        
+    c. PromptTemplate.from_template("{one}{two}")
+        (1) 自動解析變數
+        (2) 適合快速開發，簡單且變數較少時使用
+        (3) 範例：
+        prompt_template_2 = PromptTemplate.from_template("{one}{two}")
+
+6. **PipelinePromptTemplate** Package's method  
+    a. 將 Prompt 模組化 → 可在不同的上下文重複使用，提高靈活性
+    b. 
+
+
+7. FewSho"tPromptTemplate v.s. FewShotChatMessagePromptTemplate
     a. 兩者不一樣，前者為舊版，後者為新版
     b. FewShotPromptTemplate 目前不支援拿 ChatPromptTemplate 當 example_prompt
     c. 重要 !!! （依照模型的順序撰寫工具）
@@ -43,7 +65,7 @@
     d. 可以根據需求製作 Static Model 或是 Dynamic Model 
         (1)
 
-6. Key methods for chat model
+8. Key methods for chat model
     a. invoke：
         (1) Primary method to interact with model.
         (2) Takes a list of messages as input and returns a list of messages as output.
@@ -55,6 +77,19 @@
     d.with_structured_output：
         (1) Binding the defined schema to the model and parsing the output.
 
-7. Documents Loading
+9. Documents Loading
     a. Documents must to be in local 
     b. PDF File with "from langchain_community.document_loaders import PyPDFLoader"
+
+10. 特殊語法使用
+    a. f-string / ** format 的用法
+    '''
+    for var in variables:
+        # f 代表 "Formatted String Literals"（格式化字串字面值），通常稱為 f-string
+        value = input(f"please input {var} :" )
+        # ** 解包操作是將字典 {"name": "Alice"} 轉成 name="Alice" 的形式傳給函式
+        partial_prompt = partial_prompt.partial(**{var: value})
+    '''
+    b. "\" 用法：
+        (1) \n：換行
+        (2) \t：tab

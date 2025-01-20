@@ -1,5 +1,5 @@
 # Reference：https://smith.langchain.com/onboarding?organizationId=07acc26b-a455-4c66-8557-971fd98e30c4&step=1
-# Topic：Build a semantic search engine over a PDF with document loaders, embedding models, and vector stores
+# （Stop Working on it）Topic：Build a semantic search engine over a PDF with document loaders, embedding models, and vector stores
 
 import os
 from langchain_openai import ChatOpenAI
