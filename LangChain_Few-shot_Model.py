@@ -57,7 +57,7 @@ vectorstore = Chroma.from_texts(to_vectorize, embeddings, metadatas=few_shot_exa
 
 # 利用 "SemanticSimilarityExampleSelector"  找出與 Prompt 相似度最高的 few-shot 範例
 ## 不會直接產出 final_prompt, 呼叫 llm 
-example_selector = SemanticSimilarityExampleSelector(
+example_selector_１ = SemanticSimilarityExampleSelector(
     vectorstore = vectorstore,
     k = 2, ## 對 Prompt，只選出前 2 個最相似的範例
 )
@@ -71,7 +71,7 @@ print(selected)
 ## Must to combine ChatPromptTemplate or chain to make final prompt
 few_shot_prompt = FewShotChatMessagePromptTemplate(
     example_prompt = prompt_template,
-    example_selector = example_selector,
+    example_selector = example_selector_１,
     # 若使用 static few-shot model 則將 example_selector 改為 examples
     # examples = few_shot_examples, 
 )
@@ -89,12 +89,88 @@ final_prompt = ChatPromptTemplate.from_messages(
 # final_prompt 負責：把 system 訊息、few-shot examples、user 的 input 一起組合成最終完整的 Chat 訊息列表。
 chain = final_prompt | llm
 
+''' Generation Part
 # Different Results between normal text response and few-shot 
 response = chain.invoke({"input": "Kangaroo"})
 print(response.content)
+'''
+
 
 ''' 錯誤 Generation Example
 此方法模型無法理解 few-shot examples
 response = llm.invoke({"input": "Kangaroo"})
 print(response.content)
 '''
+
+
+# 利用自定義的方式建立 Example Slector
+from langchain_core.example_selectors.base import BaseExampleSelector
+
+# CustomExampleSelector 繼承 BaseExampleSelector
+## 利用 prompt length 比較 prompt 與 example 的關聯性 → 效果應較差
+class Length_ExampleSelector(BaseExampleSelector):
+    # Initialize the class
+    ## self：表示 object 本身
+    ## example：表示呼叫的參數
+    def __init__(self, examples):
+        # 透過 self.example 將傳入的 examples 参数赋值给 object 的 examples 屬性
+        self.examples = examples
+
+    # define the add function
+    ## 加入新輸入的 example
+    def add_example(self, example):
+        self.examples.append(example)
+
+    # define the select functioin
+    ## 尋找與使用者 prompt 長度相同的 example
+    def select_examples(self, input_variables):
+        # This assumes knowledge that part of the input will be a 'text' key
+        new_word = input_variables["input"]
+        new_word_length = len(new_word)
+
+        # Initialize variables to store the best match and its length difference
+        best_match = None
+        smallest_diff = float("inf")
+
+        # Iterate through each example
+        for example in self.examples:
+            # 計算 prompt、example 之間的字數差距
+            current_diff = abs(len(example["input"]) - new_word_length)
+
+            # 更新最相近的 example
+            if current_diff < smallest_diff:
+                smallest_diff = current_diff
+                best_match = example
+
+        return [best_match]
+
+example_selector_2 = Length_ExampleSelector(few_shot_examples)
+# 測試 prompt 對應到的 example 為何
+print(example_selector_2.select_examples({"input": "okay"}))
+
+example_selector_2.add_example({"input": "hand", "output": "mano"})
+print(example_selector_2.select_examples({"input": "okay"}))
+
+
+''' Generation Part：same way to generate with pipeline and example_selector
+few_shot_prompt = FewShotChatMessagePromptTemplate(
+    example_prompt = prompt_template,
+    example_selector = example_selector_2,
+)    
+final_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You are genious, you can answer everything."),
+        few_shot_prompt,
+        ("user", "{input}"),
+    ]
+)
+chain = final_prompt | llm
+response = chain.invoke({"input": "Kangaroo"})
+print(response.content)
+'''
+
+
+
+
+
+

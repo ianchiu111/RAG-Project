@@ -54,7 +54,7 @@
         (3) 用戶輸入
 
 
-7. FewSho"tPromptTemplate v.s. FewShotChatMessagePromptTemplate
+7. FewShotPromptTemplate v.s. FewShotChatMessagePromptTemplate
     a. 兩者不一樣，前者為舊版，後者為新版
     b. FewShotPromptTemplate 目前不支援拿 ChatPromptTemplate 當 example_prompt
     c. 重要 !!! （依照模型的順序撰寫工具）
@@ -66,7 +66,6 @@
         (5) ChatPromptTemplate：用來定義 Final Prompt
         (6) chain, "|" ：為 pineline 的概念
     d. 可以根據需求製作 Static Model 或是 Dynamic Model 
-        (1)
 
 8. Key methods for chat model
     a. invoke：
@@ -96,3 +95,21 @@
     b. "\" 用法：
         (1) \n：換行
         (2) \t：tab
+
+11. Example Selector
+    a. 可建立的 Selector 種類
+        (1) Similarity：Uses semantic similarity between inputs and examples to decide which examples to choose.
+        (2) MMR：Uses Max Marginal Relevance between inputs and examples to decide which examples to choose.
+        (3) Length：Selects examples based on how many can fit within a certain length
+        (4) Ngram：Uses ngram overlap between inputs and examples to decide which examples to choose.
+    b. example_selector = SemanticSimilarityExampleSelector()
+        (1) 利用 "from langchain_core.example_selectors import SemanticSimilarityExampleSelector" 套件
+        (2) 將文字向量化，找出相似度最高的 example_prompt
+        (3) 屬性
+            i. vectorstore：向量資料庫
+            ii. k：對 Prompt，只選出前 2 個最相似的範例
+    c. example_selector = Length_ExampleSelector(few_shot_examples)
+        (1) 利用 "from langchain_core.example_selectors.base import BaseExampleSelector" 套件
+        (2) 利用 "class Length_ExampleSelector(BaseExampleSelector):" 繼承 BaseExampleSelector 屬性
+        (3) 透過自定義 function 來建立篩選的規則（長度相似度）
+            
