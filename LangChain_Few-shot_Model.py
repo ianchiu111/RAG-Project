@@ -11,7 +11,6 @@ from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_openai import OpenAIEmbeddings
 from langchain_core.prompts import FewShotChatMessagePromptTemplate
 
-
 # Change false to true when needed
 os.environ["LANGSMITH_TRACING"] = "true" 
 LANGSMITH_API_KEY = os.getenv('LANGSMITH_API_KEY')
@@ -168,9 +167,3 @@ chain = final_prompt | llm
 response = chain.invoke({"input": "Kangaroo"})
 print(response.content)
 '''
-
-
-
-
-
-

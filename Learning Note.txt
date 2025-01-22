@@ -54,20 +54,22 @@
         (3) 用戶輸入
 
 
-7. FewShotPromptTemplate v.s. FewShotChatMessagePromptTemplate
-    a. 兩者不一樣，前者為舊版，後者為新版
-    b. FewShotPromptTemplate 目前不支援拿 ChatPromptTemplate 當 example_prompt
-    c. 重要 !!! （依照模型的順序撰寫工具）
-       若要讓 Few-Shot Example 實際應用在模型中，則會需要用到
-        (1) ChatOpenAI：建立 LLM
-        (2) Few-Shot Example：用 List 來建立模型所需的 Few-Shot Examples
-        (3) ChatPromptTemplate：用來定義 Normal Prompt Template
-        (4) FewShotChatMessagePromptTemplate：用來定義 Few-Shot Prompt Template 
-        (5) ChatPromptTemplate：用來定義 Final Prompt
-        (6) chain, "|" ：為 pineline 的概念
-    d. 可以根據需求製作 Static Model 或是 Dynamic Model 
+7. Few-Shot Example 建立流程（建議）
+    a. ChatOpenAI：建立 LLM
+    b. Few-Shot Example：用 List 來建立模型所需的 Few-Shot Examples
+    c. ChatPromptTemplate：用來定義 Normal Prompt Template
+    d. FewShotChatMessagePromptTemplate：用來定義 Few-Shot Prompt Template 
+    e. ChatPromptTemplate：用來定義 Final Prompt
+    f. chain, "|" ：為 pineline 的概念
 
-8. Key methods for chat model
+8. FewShotPromptTemplate v.s. FewShotChatMessagePromptTemplate
+    a. FewShotPromptTemplate 目前不支援拿 ChatPromptTemplate 當 example_prompt
+    b. 
+    c. FewShotChatMessagePromptTemplate：其 example_prompt 屬性，不能以單純的文字式 PromptTemplate
+    d. Chat 的差別
+        (1) 套件中存在"Chat"字眼：組裝的是「多段聊天訊息」，如 SystemMessage、HumanMessage 等
+        (2) 套件中不存在"Chat"字眼：組裝的是「純文字」，如：String
+9. Key methods for chat model
     a. invoke：
         (1) Primary method to interact with model.
         (2) Takes a list of messages as input and returns a list of messages as output.
@@ -79,11 +81,11 @@
     d.with_structured_output：
         (1) Binding the defined schema to the model and parsing the output.
 
-9. Documents Loading
+10. Documents Loading
     a. Documents must to be in local 
     b. PDF File with "from langchain_community.document_loaders import PyPDFLoader"
 
-10. 特殊語法使用
+11. 特殊語法使用
     a. f-string / ** format 的用法
     '''
     for var in variables:
@@ -96,7 +98,7 @@
         (1) \n：換行
         (2) \t：tab
 
-11. Example Selector
+12. Example Selector
     a. 可建立的 Selector 種類
         (1) Similarity：Uses semantic similarity between inputs and examples to decide which examples to choose.
         (2) MMR：Uses Max Marginal Relevance between inputs and examples to decide which examples to choose.
