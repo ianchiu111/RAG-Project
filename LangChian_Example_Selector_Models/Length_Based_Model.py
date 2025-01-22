@@ -42,7 +42,7 @@ prompt_template = PromptTemplate(
 example_selector = LengthBasedExampleSelector(
     examples = few_shot_examples,
     example_prompt = prompt_template,
-    max_length=25,
+    max_length = 25,
 )
 
 few_shot_prompt = FewShotPromptTemplate(

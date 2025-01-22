@@ -1,11 +1,15 @@
 '''
 Maximal Marginal Relevance (MMR) Example Selector Model
+1. have a CUDA-supported GPU run "pip install faiss-gpu" on terminal
+2. don't have a CUDA-supported GPU run "pip install faiss-cpu" on terminal
 '''
 
+from langchain_core.example_selectors import MaxMarginalRelevanceExampleSelector
+from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 import os
-from langchain_openai import ChatOpenAI
-# from langchain.chains import LLMChain 這個用法已遭到 LangChain 棄用
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
 
 # Change false to true when needed
 os.environ["LANGSMITH_TRACING"] = "true" 
@@ -33,11 +37,14 @@ prompt_template = PromptTemplate(
     template="Input: {input}\nOutput: {output}",
 )
 
-# 跑 length based selector 必備套件
-example_selector = LengthBasedExampleSelector(
-    examples = few_shot_examples,
-    example_prompt = prompt_template,
-    max_length=25,
+example_selector = MaxMarginalRelevanceExampleSelector.from_examples(
+    few_shot_examples,
+    # The embedding class used to measure semantic similarity.
+    OpenAIEmbeddings(),
+    # The VectorStore class that is used to store the embeddings and do a similarity search over.
+    FAISS,
+    # The number of examples to produce.
+    k=2,
 )
 
 few_shot_prompt = FewShotPromptTemplate(

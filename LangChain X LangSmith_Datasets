@@ -1,0 +1,77 @@
+'''
+Needed Package
+1. pip install -qU "langsmith>=0.1.101" "langchain-core>=0.2.34" langchain langchain-openai langchain-benchmarks
+'''
+## 尚未完成
+
+
+import os
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_chroma import Chroma
+from langchain_core.example_selectors import SemanticSimilarityExampleSelector
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.prompts import FewShotChatMessagePromptTemplate
+from langsmith import Client as LangSmith
+
+# Change false to true when needed
+os.environ["LANGSMITH_TRACING"] = "true" 
+LANGSMITH_API_KEY = os.getenv('LANGSMITH_API_KEY')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+# Openai api with Langchain Framework
+# setup model's parameter, like Temperature, N, top_p, etc
+llm = ChatOpenAI(
+    model = "gpt-4-turbo",
+    temperature = 1.2,
+)
+
+# Clone a public dataset and turn on indexing for the dataset（Multiverse math few shot example dataset）
+## This enables searching over the dataset and updates/adds examples will also indexed
+ls_client = LangSmith()
+
+dataset_name = "multiverse-math-few-shot-examples-v2"
+dataset_public_url = ("https://smith.langchain.com/public/620596ee-570b-4d2b-8c8f-f828adbe5242/d")
+
+# Clone the dataset and ensure the process is successful
+try:
+    ls_client.clone_public_dataset(dataset_public_url)
+    print("Dataset cloned successfully.")
+except Exception as e:
+    print(f"Error cloning dataset: {e}")
+
+# Read the dataset and get the ID
+try:
+    dataset = ls_client.read_dataset(dataset_name=dataset_name)
+    dataset_id = dataset.id
+    print(f"Dataset ID: {dataset_id}")
+except Exception as e:
+    print(f"Error reading dataset: {e}")
+
+# Use the dataset_id parameter in similar_examples function
+try:
+    examples = ls_client.similar_examples(
+        {"question": "whats the negation of the negation of the negation of 3"},
+        dataset_id=dataset_id,
+        limit=3
+    )
+    print(f"Number of examples found: {len(examples)}")
+except Exception as e:
+    print(f"Error retrieving similar examples: {e}")
+
+
+# ls_client.clone_public_dataset(dataset_public_url)
+
+# dataset = ls_client.read_dataset(dataset_name=dataset_name)
+# dataset_id = dataset.id
+
+# #ls_client.index_dataset(dataset_id=dataset_id)
+
+# examples = ls_client.similar_examples(
+#     {"question": "whats the negation of the negation of the negation of 3"},
+#     limit=3,
+#     dataset_id=dataset_id,
+# )
+# len(examples)
+
+

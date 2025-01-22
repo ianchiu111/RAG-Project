@@ -53,7 +53,6 @@
         (2) 範例提示
         (3) 用戶輸入
 
-
 7. Few-Shot Example 建立流程（建議）
     a. ChatOpenAI：建立 LLM
     b. Few-Shot Example：用 List 來建立模型所需的 Few-Shot Examples
@@ -69,6 +68,7 @@
     d. Chat 的差別
         (1) 套件中存在"Chat"字眼：組裝的是「多段聊天訊息」，如 SystemMessage、HumanMessage 等
         (2) 套件中不存在"Chat"字眼：組裝的是「純文字」，如：String
+
 9. Key methods for chat model
     a. invoke：
         (1) Primary method to interact with model.
@@ -112,6 +112,31 @@
             ii. k：對 Prompt，只選出前 2 個最相似的範例
     c. example_selector = Length_ExampleSelector(few_shot_examples)
         (1) 利用 "from langchain_core.example_selectors.base import BaseExampleSelector" 套件
-        (2) 利用 "class Length_ExampleSelector(BaseExampleSelector):" 繼承 BaseExampleSelector 屬性
-        (3) 透過自定義 function 來建立篩選的規則（長度相似度）
-            
+        (2) "class Length_ExampleSelector(BaseExampleSelector):" 繼承 BaseExampleSelector 屬性
+        (3) 屬性
+            i. max_length：限制 few-shot examples 的長度
+    d. example_selector = NGramOverlapExampleSelector()
+        (1) 利用 "from langchain_community.example_selectors import NGramOverlapExampleSelector" 套件
+        (2) 屬性
+            i.  threshold：設定 examples 之間需要有多少 n-gram 重疊才能「被視為相似」
+            ii. n of N-gram：Document 切割後的單位
+    e. example_selector = MaxMarginalRelevanceExampleSelector.from_examples()
+        (1) 利用 "from langchain_core.example_selectors import MaxMarginalRelevanceExampleSelector" 套件
+        (2) 屬性
+            i. FAISS： VectorStore class to store the embeddings and do similarity search
+            ii. k：The number of examples to produce
+            iii. OpenAIEmbeddings()：to measure semantic similarity
+
+    f. maximal marginal relevance (MMR) 與 semantic similarity 的差異
+        (1) semantic similarity：透過 Embedding 與其他語意分析，衡量 Prompt 與 Example 的關聯性
+        (2) Maximal Marginal Relevance：考慮 Prompt 與 Example 的關聯性 + Example 之間的相似度，避免挑到相似度過高且重疊的範例
+
+13. Chat Model 
+    a. Functioin/Tool Calling   
+        (1) .bind_tools() method for passing tool schemas to the model
+        (2) @tool decorator for control of 
+            i. tool names
+            ii. argumentation description (還有其他的 control)
+
+
+
