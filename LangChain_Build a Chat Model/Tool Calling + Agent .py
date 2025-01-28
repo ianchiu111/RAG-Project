@@ -2,11 +2,6 @@ import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import tool
-from langchain_core.messages import HumanMessage
-#from langchain_chroma import Chroma
-#from langchain_openai import OpenAIEmbeddings
-#from langchain_core.prompts import FewShotChatMessagePromptTemplate
-
 
 # Change false to true when needed
 os.environ["LANGSMITH_TRACING"] = "true" 
