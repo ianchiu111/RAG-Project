@@ -1,0 +1,133 @@
+1. 基於 LangChain 框架來呼叫 OpenAI API
+
+2. LangChain 整合了 LangSmith 功能，以追蹤和分析 LLM 調用的工具
+    a. 每次的 Prompt 及 Response
+    b. Token 使用情況
+    c. Latency and Errors
+    d. 因為 openai api 並不會提供上述的功能
+
+3. About the meaning of "Invoke" method
+    a. "Invoke" is like a list of Message object, encapsulating the different types of needs, like SystemMessage and HumanMessage
+    b. With Invoke, we can send multiple messages to the language model in a structured format
+    c. Receive a single, consolidated response from the model with prompt
+
+4. **ChatPromptTemplate** Package's methods
+    a. ChatPromptTemplate.from_messages()
+        (1) application：適用於同時要定義多個角色訊息，如「system」、「user」、「assistant」、「function」等）的情境
+        (2) limitation：需要以 list/tuple 的形式明確指定每個訊息 (message) 與對應的角色 (role)
+        (3) example：
+        ChatPromptTemplate.from_messages([
+            ("system", "Translate the following from English into {language}"),
+            ("user", "{text}")
+        ])
+        (4) assumption：需要在一個 ChatPrompt 裡安插多條訊息（包含 system、user、assistant 等），或需要多段範例、few-shot、上下文，就選擇 from_messages()
+        
+    b. ChatPromptTemplate.from_template()
+        (1) application：更單純的「單一模板」。通常用在只需要一個角色（常見是 user 或 system）即可完成的提示。
+        (2) limitatioin：一次只能生成「一個訊息」(例如整段都視為 user 消息或 system 消息)
+        (3) example：
+        ChatPromptTemplate.from_template("Question: {question}\n{answer}")
+        (4) assumption：只需要一條訊息的模板（例如簡單的翻譯指令、單一問題提示），那麼 from_template() 就能快速完成。
+
+5. **PromptTemplate** Package's methods
+    a. 用來定義 prompt 的格式
+    b. PromptTemplate("--content--")
+        (1) 需要手動指定 input_variables
+        (2) 適合需要明確變數的場合，如：大型專案、複雜的場景
+        (3) 範例：
+        prompt_template_3 = PromptTemplate(
+            template="Tell me a {adjective} joke about the day {date}",
+            input_variables=["adjective", "date"],
+        )
+        
+    c. PromptTemplate.from_template("{one}{two}")
+        (1) 自動解析變數
+        (2) 適合快速開發，簡單且變數較少時使用
+        (3) 範例：
+        prompt_template_2 = PromptTemplate.from_template("{one}{two}")
+
+6. **PipelinePromptTemplate** Package's method  
+    a. 將 Prompt 模組化 → 可在不同的上下文重複使用，提高靈活性
+    b. 將 Prompt 拆分成多個子Prompt
+        (1) 系統指令
+        (2) 範例提示
+        (3) 用戶輸入
+
+7. Few-Shot Example 建立流程（建議）
+    a. ChatOpenAI：建立 LLM
+    b. Few-Shot Example：用 List 來建立模型所需的 Few-Shot Examples
+    c. ChatPromptTemplate：用來定義 Normal Prompt Template
+    d. FewShotChatMessagePromptTemplate：用來定義 Few-Shot Prompt Template 
+    e. ChatPromptTemplate：用來定義 Final Prompt
+    f. chain, "|" ：為 pineline 的概念
+
+8. FewShotPromptTemplate v.s. FewShotChatMessagePromptTemplate
+    a. FewShotPromptTemplate 目前不支援拿 ChatPromptTemplate 當 example_prompt
+    b. 
+    c. FewShotChatMessagePromptTemplate：其 example_prompt 屬性，不能以單純的文字式 PromptTemplate
+    d. Chat 的差別
+        (1) 套件中存在"Chat"字眼：組裝的是「多段聊天訊息」，如 SystemMessage、HumanMessage 等
+        (2) 套件中不存在"Chat"字眼：組裝的是「純文字」，如：String
+
+9. Key methods for chat model
+    a. invoke：
+        (1) Primary method to interact with model.
+        (2) Takes a list of messages as input and returns a list of messages as output.
+    b.stream：
+        (1) Allows to stream the output of generations.
+    c.batch 批次：
+        (1) Handles multiple input requests simultaneously.
+        (2) Allows for more efficient processing
+    d.with_structured_output：
+        (1) Binding the defined schema to the model and parsing the output.
+
+10. Documents Loading
+    a. Documents must to be in local 
+    b. PDF File with "from langchain_community.document_loaders import PyPDFLoader"
+
+11. 特殊語法使用
+    a. f-string / ** format 的用法
+    '''
+    for var in variables:
+        # f 代表 "Formatted String Literals"（格式化字串字面值），通常稱為 f-string
+        value = input(f"please input {var} :" )
+        # ** 解包操作是將字典 {"name": "Alice"} 轉成 name="Alice" 的形式傳給函式
+        partial_prompt = partial_prompt.partial(**{var: value})
+    '''
+    b. "\" 用法：
+        (1) \n：換行
+        (2) \t：tab
+
+12. Example Selector
+    a. 可建立的 Selector 種類
+        (1) Similarity：Uses semantic similarity between inputs and examples to decide which examples to choose.
+        (2) MMR：Uses Max Marginal Relevance between inputs and examples to decide which examples to choose.
+        (3) Length：Selects examples based on how many can fit within a certain length
+        (4) Ngram：Uses ngram overlap between inputs and examples to decide which examples to choose.
+    b. example_selector = SemanticSimilarityExampleSelector()
+        (1) 利用 "from langchain_core.example_selectors import SemanticSimilarityExampleSelector" 套件
+        (2) 將文字向量化，找出相似度最高的 example_prompt
+        (3) 屬性
+            i. vectorstore：向量資料庫
+            ii. k：對 Prompt，只選出前 2 個最相似的範例
+    c. example_selector = Length_ExampleSelector(few_shot_examples)
+        (1) 利用 "from langchain_core.example_selectors.base import BaseExampleSelector" 套件
+        (2) "class Length_ExampleSelector(BaseExampleSelector):" 繼承 BaseExampleSelector 屬性
+        (3) 屬性
+            i. max_length：限制 few-shot examples 的長度
+    d. example_selector = NGramOverlapExampleSelector()
+        (1) 利用 "from langchain_community.example_selectors import NGramOverlapExampleSelector" 套件
+        (2) 屬性
+            i.  threshold：設定 examples 之間需要有多少 n-gram 重疊才能「被視為相似」
+            ii. n of N-gram：Document 切割後的單位
+    e. example_selector = MaxMarginalRelevanceExampleSelector.from_examples()
+        (1) 利用 "from langchain_core.example_selectors import MaxMarginalRelevanceExampleSelector" 套件
+        (2) 屬性
+            i. FAISS： VectorStore class to store the embeddings and do similarity search
+            ii. k：The number of examples to produce
+            iii. OpenAIEmbeddings()：to measure semantic similarity
+
+    f. maximal marginal relevance (MMR) 與 semantic similarity 的差異
+        (1) semantic similarity：透過 Embedding 與其他語意分析，衡量 Prompt 與 Example 的關聯性
+        (2) Maximal Marginal Relevance：考慮 Prompt 與 Example 的關聯性 + Example 之間的相似度，避免挑到相似度過高且重疊的範例
+

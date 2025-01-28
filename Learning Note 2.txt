@@ -1,0 +1,44 @@
+'''
+To Build a Chat Model
+'''
+
+# Topic 1：function / tool Calling
+1. .bind_tools() method for passing tool schemas to the model
+    a. 可針對不同的 prompt 種類使用對應的 tool，例如：計算 → 數學 / 天氣 → 天氣的 function
+
+2. @tool decorator 
+    a. 在 LangChain 中，@tool 提供了一種簡潔的方法來將函式轉換為工具，並自動處理名稱、描述和參數等屬性
+    b. 不使用 @tool 裝飾器時，則需要手動定義工具的各個屬性，可能導致潛在的錯誤。以 @tool 自動處理細節
+
+3. Tool 包含以下所有內容
+    a. functioin name
+    b. type hints
+    c. docstring(文件字串)
+
+4. Example：
+    @tool
+    def add(a: int, b: int) -> int:
+    """ 兩數字相加 """
+    return a + b
+
+5. 可結合 "Agent" 超級好用!!!!!!!
+    a. Example：
+    ''' Code Block
+    tools = [add, multiply]
+
+    agent = initialize_agent(
+    tools=tools,
+    llm=llm,
+    agent=AgentType.OPENAI_FUNCTIONS,  # Choose appropriate agent type
+    verbose=True  # Set to True for detailed logs
+    )
+
+    query = "What is 2 + 9?"
+    response = agent.run(query)
+    print(f"Response: {response}")
+    '''
+
+    b. Reference for Agent Type：https://api.python.langchain.com/en/latest/agents/langchain.agents.agent_types.AgentType.html
+
+6. Other Reference
+    a. https://langchain-ai.github.io/langgraph/how-tos/tool-calling/#define-tools    
