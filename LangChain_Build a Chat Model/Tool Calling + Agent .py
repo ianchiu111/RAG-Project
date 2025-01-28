@@ -1,7 +1,12 @@
+'''
+# Build a Chat Model --- Tool Calling with Agent
+'''
+
 import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import tool
+from langchain.agents import initialize_agent, AgentType
 
 # Change false to true when needed
 os.environ["LANGSMITH_TRACING"] = "true" 
@@ -38,7 +43,8 @@ tools = [add, multiply]
 # -----------------------------
 #  Initialize the Agent
 # -----------------------------
-from langchain.agents import initialize_agent, AgentType
+
+# from langchain.agents import initialize_agent, AgentType
 agent = initialize_agent(
     tools=tools,
     llm=llm,
@@ -48,6 +54,17 @@ agent = initialize_agent(
 # -----------------------------
 #  Run the Agent with a Query
 # -----------------------------
+
 query = "What is 3 * 12? Also, what is 11 + 49?"
+
+# -----------------------------
+#  Bonus：Topic 2：In Memory Cache
+# -----------------------------
+from langchain_core.globals import set_llm_cache
+from langchain_core.caches import InMemoryCache
+set_llm_cache(InMemoryCache())
+# -----------------------------
+
 response = agent.run(query)
 print(f"Response: {response}")
+
