@@ -3,8 +3,7 @@ To Build a Chat Model
 '''
 
 # Topic 1：function / tool Calling
-1. .bind_tools() method for passing tool schemas to the model
-    a. 可針對不同的 prompt 種類使用對應的 tool，例如：計算 → 數學 / 天氣 → 天氣的 function
+1. 使用 tool calling 需要結合 Agent 代理功能
 
 2. @tool decorator 
     a. 在 LangChain 中，@tool 提供了一種簡潔的方法來將函式轉換為工具，並自動處理名稱、描述和參數等屬性
@@ -42,6 +41,20 @@ To Build a Chat Model
 
 6. Other Reference
     a. https://langchain-ai.github.io/langgraph/how-tos/tool-calling/#define-tools    
+
+7. 使用 Agent 生成 v.s. 直接調用 LLM
+    a. Agent：
+        (1) 可使用多種工具（tools）來增強功能
+        (2) 可指定 Agent 的類型
+        (3) verbose 可輸出詳細的日誌，增加模型解釋性
+        (4) 使用 Agent 花費高，約為 LLM 10倍以上
+        (5) 適合後期需要詳細的運行日誌來監控和調整
+
+    b. LLM：    
+        (1) 功能性較差，容易限制於 LLM 本身
+        (2) 需手動擴展功能
+        (3) 成本低，回應快速，開發較方便
+        (4) 適合早期迭代與驗證使用
 
 # Topic 2：Cache Chat Model Response
 1. reduce cost of calling API if the user frequently request same question
