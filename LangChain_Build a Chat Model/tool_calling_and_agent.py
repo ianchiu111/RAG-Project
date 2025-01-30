@@ -7,17 +7,14 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.agents import AgentExecutor, create_tool_calling_agent, tool
 
-# Change false to true when needed
-os.environ["LANGSMITH_TRACING"] = "true" 
+os.environ["LANGSMITH_TRACING"] = "true"  # Change false to true when needed
 LANGSMITH_API_KEY = os.getenv('LANGSMITH_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-# Openai api with Langchain Framework
-# setup model's parameter, like Temperature, N, top_p, etc
 llm = ChatOpenAI(
     model = "gpt-4-turbo",
     temperature = 1.2,
-    logprobs = True # 用於產生 log probability
+    # logprobs = True 用於產生 log probability（較新的 LLM 不支援 logprobs 參數）
 )
 
 prompt_template = ChatPromptTemplate.from_messages(
@@ -51,7 +48,7 @@ tools = [add, multiply]
 agent = create_tool_calling_agent(llm, tools, prompt_template)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-agent_executor.invoke({"input": "what is the value of magic_function(3)?"})
+agent_executor.invoke({"input": "what is 5 +3 and 5 * 3"})
 
 # -----------------------------
 #  Bonus：Topic 2：In Memory Cache
