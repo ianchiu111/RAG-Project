@@ -9,8 +9,8 @@ from custom_chat_model import ChatParrotLink  # 依據實際檔案位置做 impo
 def main():
     # 初始化自訂模組，設定回音長度 parrot_buffer_length=5
     model = ChatParrotLink(
-        model="my-parrot-model",    # model_name => alias="model"
-        parrot_buffer_length=5
+        model = "my-parrot-model",    # model_name => alias="model"
+        parrot_buffer_length = 5
     )
 
     # 建立一個 HumanMessage

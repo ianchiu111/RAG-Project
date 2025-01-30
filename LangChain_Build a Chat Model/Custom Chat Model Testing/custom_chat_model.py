@@ -13,7 +13,6 @@ from langchain_core.messages.ai import UsageMetadata
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 from pydantic import Field
 
-
 class ChatParrotLink(BaseChatModel):
     """A custom chat model that echoes the first `parrot_buffer_length` characters
     of the input.

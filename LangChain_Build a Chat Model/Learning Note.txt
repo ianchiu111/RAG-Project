@@ -64,3 +64,22 @@ To Build a Chat Model
     b. from langchain_core.caches import InMemoryCache
     c. set_llm_cache(InMemoryCache())
 
+# Topic 3：Rate Limiter
+1. LangChainBetaWarning: Introduced in 0.2.24. API subject to change.
+
+2. 參數 - requests_per_second
+    a. 定義：決定在一秒內可以執行多少次呼叫（Request）
+    b. 用途：
+        (1) 限制 API 呼叫頻率
+        (2) 平衡系統負載
+        (3) 可應用在訂閱制度，來限制不同使用者的使用流暢度
+
+3. 參數 - check_every_n_seconds
+    a. 定義：每隔多少秒檢查一次當前的可用請求量（ Request Bucket）
+    b. 用途：
+        (1) 
+        (2)
+
+4. 參數 - max_bucket_size
+    a. 定義：一次性請求中最大的 Token 數量
+    b. 用途：
