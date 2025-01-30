@@ -20,13 +20,15 @@ llm = ChatOpenAI(
 prompt_template = ChatPromptTemplate.from_messages(
     [
         ("user", "{input}"),
-        ("placeholder", "{agent_scratchpad}")
+        # ("placeholder", "{agent_scratchpad}") open with agent part
     ]
 )
 
 # Topic 1：Function/Tool Calling / Combine with Agent（超級好用）
 ## 使用 tool calling 需要結合 Agent 代理功能
 ## Reference：https://python.langchain.com/api_reference/langchain/agents/langchain.agents.tool_calling_agent.base.create_tool_calling_agent.html
+
+''' <Tool Calling + Agent Part>
 @tool
 def add(a: int, b: int) -> int:
     """ 將兩數相加 """
@@ -46,9 +48,15 @@ tools = [add, multiply]
 # from langchain.agents import AgentExecutor, create_tool_calling_agent, tool
 
 agent = create_tool_calling_agent(llm, tools, prompt_template)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+agent_executor = AgentExecutor(
+    agent = agent ,
+    tools = tools ,
+    verbose = False, # verbose = True 會啟用 LangChain 的日誌記錄功能 → 導致 StdOutCallbackHandler.on_chain_start callback: AttributeError("'NoneType' object has no attribute 'get'")"
+)
 
-agent_executor.invoke({"input": "what is 5 +3 and 5 * 3"})
+response = agent_executor.invoke({"input": "what is 5 +3 and 5 * 3"})
+print(response["output"])
+'''
 
 # -----------------------------
 #  Bonus：Topic 2：In Memory Cache
@@ -58,4 +66,15 @@ from langchain_core.caches import InMemoryCache
 set_llm_cache(InMemoryCache())
 # -----------------------------
 
+# -----------------------------
+#  Topic 3：Response MetaData
+## Close agent part
+# -----------------------------
 
+# Standard Output of LLM
+## 可以透過 print(response) 了解需要的詳細資料
+prompt_template = prompt_template.invoke({"input": "what is 5 +3 and 5 * 3"})
+response = llm.invoke(prompt_template)
+print(response)
+
+# -----------------------------

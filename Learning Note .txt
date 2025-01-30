@@ -63,9 +63,8 @@
 
 8. FewShotPromptTemplate v.s. FewShotChatMessagePromptTemplate
     a. FewShotPromptTemplate 目前不支援拿 ChatPromptTemplate 當 example_prompt
-    b. 
-    c. FewShotChatMessagePromptTemplate：其 example_prompt 屬性，不能以單純的文字式 PromptTemplate
-    d. Chat 的差別
+    b. FewShotChatMessagePromptTemplate：其 example_prompt 屬性，不能以單純的文字式 PromptTemplate
+    c. Chat 的差別
         (1) 套件中存在"Chat"字眼：組裝的是「多段聊天訊息」，如 SystemMessage、HumanMessage 等
         (2) 套件中不存在"Chat"字眼：組裝的是「純文字」，如：String
 
