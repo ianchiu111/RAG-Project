@@ -1,5 +1,6 @@
 '''
 # Build a Chat Model --- Tool Calling with Agent
+## LangChain Version：version v0.3.17
 '''
 
 import os
@@ -10,9 +11,18 @@ os.environ["LANGSMITH_TRACING"] = "true"  # Change false to true when needed
 LANGSMITH_API_KEY = os.getenv('LANGSMITH_API_KEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("user", "{input}"),
+        #("placeholder", "{agent_scratchpad}") #open with agent part
+    ]
+)
+
 # -----------------------------
 #  Topic 4：Rate Limiter
+## 目前為 Beta 階段，若有調整再做改變
 # -----------------------------
+
 from langchain_core.rate_limiters import InMemoryRateLimiter
 
 rate_limiter = InMemoryRateLimiter(
@@ -26,14 +36,7 @@ llm = ChatOpenAI(
     model = "gpt-4-turbo",
     temperature = 1.2,
     # logprobs = True 用於產生 log probability（較新的 LLM 不支援 logprobs 參數）
-    rate_limiter = rate_limiter
-)
-
-prompt_template = ChatPromptTemplate.from_messages(
-    [
-        ("user", "{input}"),
-        #("placeholder", "{agent_scratchpad}") #open with agent part
-    ]
+    rate_limiter=rate_limiter #結合 Topic 4：Rate Limiter
 )
 
 # Topic 1：<Function/Tool Calling> combine with <Agent>（超級好用）
@@ -76,6 +79,7 @@ print(response["output"])
 #  Topic 2：<In Memory Cache> combine with <Rate Limiter>（可以呈現出 In Memory Cache 的用處）
 ## Cache 功能可以減少相同題目重複詢問的狀況 → 降低模型回覆的時間成本與浪費
 # -----------------------------
+'''
 from langchain_core.globals import set_llm_cache
 from langchain_core.caches import InMemoryCache
 
@@ -87,7 +91,9 @@ for _ in range(5):
     llm.invoke("hello")
     end = time.time()
     print(end - start)
+'''
 # -----------------------------
+
 
 # -----------------------------
 #  Topic 3：Response MetaData
